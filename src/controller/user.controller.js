@@ -33,16 +33,16 @@ const registerUser = asyncHandler(async (req, res) => {
 
   const profileImage = await uploadOnCloudinary(req.file?.path || "");
 
-  if (!profileImage.secure_url) {
-    throw new ApiError(
-      500,
-      "Something went wrong while uploading profile image"
-    );
-  }
+  // if (!profileImage?.secure_url) {
+  //   throw new ApiError(
+  //     500,
+  //     "Something went wrong while uploading profile image"
+  //   );
+  // }
 
   const user = await UserModel.create({
     name,
-    profilePhoto: profileImage.secure_url,
+    profilePhoto: profileImage?.secure_url,
     username: username.toLowerCase(),
     email: email.toLowerCase(),
     password,
@@ -67,7 +67,7 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 // ## User login
-const loginUser = asyncHandler(async (req, res) => {
+const loginUser = asyncHandler(async (req, res, next) => {
   const email = req.body?.email;
   const password = req.body?.password;
 
@@ -78,7 +78,7 @@ const loginUser = asyncHandler(async (req, res) => {
   const existedUser = await userModel.findOne({ email });
 
   if (!existedUser) {
-    throw new ApiResponce(404, "User does not exists");
+    throw new ApiError(404, "User does not exists");
   }
 
   const valid = await existedUser.isPasswordCorrect(password);

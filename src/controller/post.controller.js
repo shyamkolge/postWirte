@@ -42,10 +42,8 @@ const createPost = asyncHandler(async (req, res) => {
   loginUser.posts.push(post._id);
   await loginUser.save({ validateBeforeSave: false });
 
-  res
-    .status(201)
-    .redirect("/profile")
-    .json(new ApiResponce(200, post, "post created Successfully"));
+  res.status(201).redirect("/profile");
+  // .json(new ApiResponce(200, post, "post created Successfully"));
 });
 
 const updatePost = asyncHandler(async (req, res) => {

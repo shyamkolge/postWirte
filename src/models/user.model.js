@@ -34,10 +34,14 @@ const userSchema = new mogoose.Schema(
     refreshToken: {
       type: String,
     },
+    passwordChangedAt: {
+      type: Date,
+    },
   },
   { timestamps: true }
 );
 
+// To encrupt the password before  saving into the database
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
 
@@ -46,8 +50,22 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
+// Helper function to check password
 userSchema.methods.isPasswordCorrect = async function (password) {
   return await bcrypt.compare(password, this.password);
+};
+
+// To check password is changed after the JWT is issued.
+userSchema.methods.passwordChangedAfter = function (JWTTimestamp) {
+  if (this.passwordChangedAt) {
+    const passwordChange = parseInt(
+      this.passwordChangedAfter.getTime() / 1000,
+      10
+    );
+    return JWTTimestamp < passwordChange;
+  }
+
+  return false;
 };
 
 userSchema.methods.generateAccessToken = function () {
