@@ -18,8 +18,8 @@ const isLoggedIn = asyncHandler(async (req, res, next) => {
 
     // 3) Check if user still exists
     const freshUser = await userModel.findById(decoded._id);
-    if (!freshUser)
-      return next(new ApiError(401, "User not found with the token"));
+    if (!freshUser) redirect("/login");
+    // return next(new ApiError(401, "User not found with the token"));
 
     // 4) Check if user changed it's password after the token was issued
     if (freshUser.passwordChangedAfter(decoded.iat)) {

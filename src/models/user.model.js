@@ -5,10 +5,10 @@ import validator from "validator";
 
 const userSchema = new mogoose.Schema(
   {
-    name: {
+    profilePhoto: {
       type: String,
     },
-    profilePhoto: {
+    name: {
       type: String,
     },
     username: {
@@ -16,6 +16,12 @@ const userSchema = new mogoose.Schema(
       required: [true, "Username is required"],
       unique: true,
       trim: true,
+    },
+
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
     },
     email: {
       type: String,
@@ -68,6 +74,7 @@ userSchema.methods.passwordChangedAfter = function (JWTTimestamp) {
   return false;
 };
 
+// Access Token will be issued
 userSchema.methods.generateAccessToken = function () {
   return jwt.sign(
     {

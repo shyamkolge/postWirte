@@ -6,6 +6,7 @@ import isLoggedIn from "./middleware/isLoggedIn.js";
 import userModel from "./models/user.model.js";
 import postRoutes from "./routes/post.route.js";
 import postModel from "./models/post.model.js";
+import authCheck from "./middleware/authCheck.js";
 
 const app = express();
 
@@ -19,12 +20,15 @@ app.use(express.static("public"));
 
 app.use(cookieParser());
 
-// Home page
-app.get("/", isLoggedIn, async (req, res) => {
-  const userId = req.user._id;
+app.get("/", (req, res) => {
+  res.render("home");
+});
+
+// Posts page
+app.get("/posts", isLoggedIn, async (req, res) => {
   const posts = await postModel.find({}).populate("user");
 
-  res.render("home", { posts, userId });
+  res.render("posts", { posts, user: req.user });
 });
 
 // EJS Routes
@@ -51,10 +55,15 @@ app.get("/profile", isLoggedIn, async (req, res) => {
   res.render("profile", { user });
 });
 
-app.get("/post/edit/:postId", isLoggedIn, async (req, res) => {
-  const post = await postModel.findById(req.params.postId);
+app.get(
+  "/post/edit/:postId",
+  isLoggedIn,
+  authCheck("admin"),
+  async (req, res) => {
+    const post = await postModel.findById(req.params.postId);
 
-  res.render("editPost", { post });
-});
+    res.render("editPost", { post });
+  }
+);
 
 export default app;

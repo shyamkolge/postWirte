@@ -5,7 +5,7 @@ import userModel from "../models/user.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 const registerUser = asyncHandler(async (req, res) => {
-  const { name, username, email, password } = req.body;
+  const { name, username, email, password, role } = req.body;
 
   if (!name || name.trim() == "") {
     throw new ApiError(400, "name is required..!");
@@ -46,6 +46,7 @@ const registerUser = asyncHandler(async (req, res) => {
     username: username.toLowerCase(),
     email: email.toLowerCase(),
     password,
+    role,
   });
 
   const userCreated = await UserModel.findById(user._id).select("-password");
@@ -62,7 +63,7 @@ const registerUser = asyncHandler(async (req, res) => {
     sameSite: "strict",
     maxAge: 15 * 60 * 1000, // 15 minutes
   };
-  return res.cookie("accessToken", accessToken, options).redirect("/profile");
+  return res.cookie("accessToken", accessToken, options).redirect("/posts");
   // .json(new ApiResponce(200, userCreated, "User created successfully"))
 });
 
@@ -103,7 +104,7 @@ const loginUser = asyncHandler(async (req, res, next) => {
   return res
     .status(201)
     .cookie("accessToken", accessToken, options)
-    .redirect("/profile");
+    .redirect("/posts");
   // .json(new ApiResponce(200, logedInUser, "Logged in successfully"));
 });
 

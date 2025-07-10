@@ -5,11 +5,13 @@ import {
   updatePost,
   deletePost,
   likePost,
+  getAllPosts,
 } from "../controller/post.controller.js";
 
 const router = Router();
 
 router
+  .get("/all", getAllPosts)
   .get("/:id", getPostById)
   .post("/create", createPost)
   .post("/edit/:postId", updatePost)

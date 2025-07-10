@@ -42,7 +42,7 @@ const createPost = asyncHandler(async (req, res) => {
   loginUser.posts.push(post._id);
   await loginUser.save({ validateBeforeSave: false });
 
-  res.status(201).redirect("/profile");
+  res.status(201).redirect("/posts");
   // .json(new ApiResponce(200, post, "post created Successfully"));
 });
 
@@ -55,12 +55,12 @@ const updatePost = asyncHandler(async (req, res) => {
     content: updatedContent,
   });
 
-  res.redirect("/profile");
+  res.redirect("/posts");
 });
 
 const deletePost = asyncHandler(async (req, res) => {
   await postModel.findByIdAndDelete(req.params.postId);
-  res.redirect("/profile");
+  res.redirect("/posts");
 });
 
 const likePost = asyncHandler(async (req, res) => {
@@ -79,4 +79,19 @@ const likePost = asyncHandler(async (req, res) => {
   res.status(200).redirect(referrer);
 });
 
-export { getPostById, createPost, updatePost, deletePost, likePost };
+const getAllPosts = asyncHandler(async (req, res) => {
+  const posts = await postModel.find({});
+
+  return res
+    .status(201)
+    .json(new ApiResponce(200, posts, "Posts Fetched Successfully"));
+});
+
+export {
+  getPostById,
+  createPost,
+  updatePost,
+  deletePost,
+  likePost,
+  getAllPosts,
+};
